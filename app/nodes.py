@@ -1,8 +1,8 @@
-"""Node Types + declarative Nevag workflow template (architecture doc §3 items
+"""Node Types + declarative nebag workflow template (architecture doc §3 items
 2, §4, §8).
 
 Defines the reusable workflow building blocks — Start, Agent, Tool, If/Else,
-HITL, End — and expresses the Nevag template as a declarative list of typed nodes
+HITL, End — and expresses the nebag template as a declarative list of typed nodes
 (like an n8n/Langflow graph) while the LangGraph executor controls execution.
 
 The executor (workflow.py) consumes the agent ORDER from this template; the
@@ -36,9 +36,9 @@ class Node:
     note: str = ""
 
 
-# The Nevag template (doc §8), expressed with explicit node types. IF_ELSE nodes
+# The nebag template (doc §8), expressed with explicit node types. IF_ELSE nodes
 # name the predicate (defined in workflow.py) and the branch agent.
-NEVAG_TEMPLATE: List[Node] = [
+nebag_TEMPLATE: List[Node] = [
     Node(NodeKind.START, "start"),
     Node(NodeKind.AGENT, "submission_intake", agent="submission_intake"),
     Node(NodeKind.AGENT, "pre_submission_context", agent="pre_submission_context"),
@@ -69,4 +69,4 @@ NEVAG_TEMPLATE: List[Node] = [
 
 def template_agent_order() -> List[str]:
     """Agent names in template order (excludes Start/End/If-Else marker nodes)."""
-    return [n.agent for n in NEVAG_TEMPLATE if n.agent and n.kind in (NodeKind.AGENT, NodeKind.HITL)]
+    return [n.agent for n in nebag_TEMPLATE if n.agent and n.kind in (NodeKind.AGENT, NodeKind.HITL)]

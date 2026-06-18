@@ -84,7 +84,7 @@ class PerplexityResearchSource:
 
 def build_research_sources(settings: Settings) -> List[ResearchSource]:
     """Factory for APPROVED research backends, gated by their own config. Perplexity
-    is enabled when NEVAG_PERPLEXITY_API_KEY (or host PERPLEXITY_API_KEY) is set."""
+    is enabled when nebag_PERPLEXITY_API_KEY (or host PERPLEXITY_API_KEY) is set."""
     sources: List[ResearchSource] = []
     if getattr(settings, "perplexity_api_key", None):
         sources.append(PerplexityResearchSource(settings))

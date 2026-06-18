@@ -2,7 +2,7 @@
 
 A catalog of the reusable agents with their capabilities, version, input/output
 contracts, and config keys. A workflow planner can use this to select and wire
-agents automatically instead of hardcoding a pipeline. The Nevag template is one
+agents automatically instead of hardcoding a pipeline. The nebag template is one
 ordered selection from this registry.
 
 This formalizes "agents as a reusable catalog": the same agent code is reused

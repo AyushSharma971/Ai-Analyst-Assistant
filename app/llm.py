@@ -5,7 +5,7 @@ protocol. Default implementation is Azure OpenAI GPT-4.1 (matching the One AI
 org standard). A MockLLM is provided so the skeleton runs with zero credentials.
 
 When integrating into One AI, you can either:
-  - keep AzureOpenAILLM (reads NEVAG_AZURE_OPENAI_*), or
+  - keep AzureOpenAILLM (reads nebag_AZURE_OPENAI_*), or
   - implement an adapter that wraps the host's existing Azure client and inject
     it — no brain code changes either way.
 """
@@ -94,7 +94,7 @@ class OllamaLLM:
 
 class AzureOpenAILLM:
     """Azure OpenAI GPT-4.1 client. Lazily imports `openai`; retries + timeout are
-    config-driven (NEVAG_LLM_MAX_RETRIES / _TIMEOUT_SECONDS / _RETRY_BACKOFF_SECONDS)."""
+    config-driven (nebag_LLM_MAX_RETRIES / _TIMEOUT_SECONDS / _RETRY_BACKOFF_SECONDS)."""
 
     name = "azure_openai"
 
@@ -114,8 +114,8 @@ class AzureOpenAILLM:
         s = self._settings
         if not self.is_available():
             raise RuntimeError(
-                "Azure OpenAI not configured: set NEVAG_AZURE_OPENAI_API_KEY and "
-                "NEVAG_AZURE_OPENAI_ENDPOINT, or use llm_provider='mock'."
+                "Azure OpenAI not configured: set nebag_AZURE_OPENAI_API_KEY and "
+                "nebag_AZURE_OPENAI_ENDPOINT, or use llm_provider='mock'."
             )
         self._client = AzureOpenAI(
             api_key=s.azure_openai_api_key,

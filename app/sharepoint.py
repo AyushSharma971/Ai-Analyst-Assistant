@@ -6,7 +6,7 @@ stdlib urllib so it adds NO dependency. Lists + downloads files from a library a
 returns them in the same shape Submission Intake expects:
     [{"filename": ..., "content_bytes": ..., "source": "sharepoint:<url>"}]
 
-Config-driven (NEVAG_SHAREPOINT_* or host SH_*/SHAREPOINT_* names). Every call is
+Config-driven (nebag_SHAREPOINT_* or host SH_*/SHAREPOINT_* names). Every call is
 best-effort: on auth/network failure it returns [] with a clear log, never crashing
 the pipeline. Tokens/secrets are never logged.
 """

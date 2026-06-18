@@ -40,7 +40,7 @@ def main():
     print("\n=== SharePoint host reachability (intake #1, future) ===")
     for var in ("SHAREPOINT_SERVICE_URL", "SH_SITE_URL", "AD_TOKEN_URL"):
         url = os.environ.get(var) or _env_overlay().get(var.lower()) or ""
-        # pull from raw .env too (these aren't Nevag settings fields)
+        # pull from raw .env too (these aren't nebag settings fields)
         if not url:
             try:
                 from dotenv import dotenv_values

@@ -1,7 +1,7 @@
 """Document AI demo — proves the real parsers on synthetic fixtures.
 
 No server, no credentials. Generates one sample per format, parses each through
-app/document_ai.py, prints what was extracted, then runs the full NevagAgent
+app/document_ai.py, prints what was extracted, then runs the full nebagAgent
 pipeline on the same files so you can see Document AI in the status trail.
 
     python run_docai_demo.py
@@ -10,9 +10,9 @@ pipeline on the same files so you can see Document AI in the status trail.
 from __future__ import annotations
 
 from app.config import Settings
-from app.contracts import IntakeMode, NevagInput
+from app.contracts import IntakeMode, nebagInput
 from app.document_ai import build_ocr_engine, parse_documents
-from app.service import NevagAgent
+from app.service import nebagAgent
 from scripts.make_fixtures import build_all
 
 
@@ -34,7 +34,7 @@ def main() -> None:
     print(f"  provider resolved to: {ocr.name} (available={ocr.available})")
     if not ocr.available:
         print("  -> scanned/image docs will be detected & routed, then flagged "
-              "(install Tesseract or set NEVAG_AZURE_DOC_INTEL_* to extract text).")
+              "(install Tesseract or set nebag_AZURE_DOC_INTEL_* to extract text).")
 
     print("\n=== Per-document parse results ===")
     docs = parse_documents(files, settings, ocr)
@@ -52,9 +52,9 @@ def main() -> None:
                   f"status={att['parse_status']}  text={_snippet(att['text'], 60)!r}")
 
     print("\n=== Full pipeline (Start->End) with real Document AI ===")
-    agent = NevagAgent(settings=settings)
+    agent = nebagAgent(settings=settings)
     result = agent.run(
-        NevagInput(
+        nebagInput(
             query="Process this new D&O submission from Acme Health Systems.",
             mode=IntakeMode.UPLOAD,
             files=files,

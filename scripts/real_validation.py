@@ -25,11 +25,11 @@ import urllib.request
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.config import Settings
-from app.contracts import IntakeMode, NevagInput
+from app.contracts import IntakeMode, nebagInput
 from app.document_ai import build_ocr_engine, parse_documents
 from app.embeddings import OllamaEmbedding, MockEmbedding
 from app.retrieval import Retriever
-from app.service import NevagAgent
+from app.service import nebagAgent
 from app.vectorstore import QdrantVectorStore
 from scripts.make_fixtures import build_all
 
@@ -160,13 +160,13 @@ def main():
     # --- 2. REAL QDRANT (local on-disk engine) ------------------------------- #
     import tempfile
     os.makedirs(out_dir, exist_ok=True)
-    qpath = tempfile.mkdtemp(prefix="nevag_qdrant_")  # fresh collection (no stale vectors)
+    qpath = tempfile.mkdtemp(prefix="nebag_qdrant_")  # fresh collection (no stale vectors)
     try:
         from qdrant_client import QdrantClient
         from app.embeddings import build_embedding_provider
         client = QdrantClient(path=qpath)
         embedder = build_embedding_provider(Settings(**base))  # real provider (azure/ollama/mock)
-        vs = QdrantVectorStore(Settings(**{**base, "qdrant_collection": "nevag_real"}), embedder.dim, client=client)
+        vs = QdrantVectorStore(Settings(**{**base, "qdrant_collection": "nebag_real"}), embedder.dim, client=client)
         retr = Retriever(Settings(**base), embedder, vs)
         fixt_docs = parse_documents(
             [{"filename": os.path.basename(p), "path": p}
@@ -179,7 +179,7 @@ def main():
         client.close()  # release the on-disk lock before reopening
         # persistence: reopen client and confirm collection survives
         client2 = QdrantClient(path=qpath)
-        persisted = "nevag_real" in [c.name for c in client2.get_collections().collections]
+        persisted = "nebag_real" in [c.name for c in client2.get_collections().collections]
         client2.close()
         report("2. REAL QDRANT (local on-disk)", [
             f"ingested chunks: {rep['chunks']} (embedder={rep['embedder']})",
@@ -197,10 +197,10 @@ def main():
 
     # --- 3 & 4. REAL EXTRACTION ACCURACY ------------------------------------- #
     t0 = time.time()
-    agent = NevagAgent(settings=Settings(**base))
+    agent = nebagAgent(settings=Settings(**base))
     files = [{"filename": os.path.basename(p), "path": p}
              for k, p in paths.items() if k != "rater_template"]
-    res = agent.run(NevagInput(query="Process submission", mode=IntakeMode.UPLOAD, files=files))
+    res = agent.run(nebagInput(query="Process submission", mode=IntakeMode.UPLOAD, files=files))
     elapsed = time.time() - t0
     by = {f.name: f.value for f in res.fields}
     correct, lines = 0, []
@@ -228,8 +228,8 @@ def main():
     # --- 5. REAL AUTOFILL + PRESERVATION ------------------------------------- #
     # Clean single-doc run (no OCR conflict) so the pipeline reaches autofill.
     import openpyxl
-    clean = NevagAgent(settings=Settings(**base))
-    cres = clean.run(NevagInput(query="fill", mode=IntakeMode.UPLOAD,
+    clean = nebagAgent(settings=Settings(**base))
+    cres = clean.run(nebagInput(query="fill", mode=IntakeMode.UPLOAD,
                                 files=[{"filename": "application.pdf", "path": paths["digital_pdf"]}]))
     out_path = os.path.join(out_dir, cres.submission_id + "_filled.xlsx")
     pres = []

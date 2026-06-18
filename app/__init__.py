@@ -1,1 +1,1 @@
-"""Nevag Submission Triage Agent — standalone, integration-safe."""
+"""nebag Submission Triage Agent — standalone, integration-safe."""

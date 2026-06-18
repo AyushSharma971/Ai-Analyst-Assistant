@@ -5,7 +5,7 @@ This is the ONLY host-coupled layer. The One AI frontend calls a data agent as:
 and expects: { result: { response, token_data? } }   (README §11 / §10.4)
 
 Slug rule (README §10.1): AgentName.lower().replace(" ", "_").
-For "Nevag Submission Triage" -> path "/nevag_submission_triage".
+For "nebag Submission Triage" -> path "/nebag_submission_triage".
 
 Extra routes beyond the base contract:
   - /sql_executor/{slug} : the "comprehensive" pass the router may call.
@@ -22,18 +22,18 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 
 from .contracts import (
     IntakeMode,
-    NevagInput,
+    nebagInput,
     OneAIRequest,
     to_oneai_envelope,
 )
 from .registration import build_registration_payload
 from .registry import describe_registry
-from .service import NevagAgent
+from .service import nebagAgent
 
-app = FastAPI(title="Nevag Submission Triage Agent")
+app = FastAPI(title="nebag Submission Triage Agent")
 
 # One process-wide agent (its deps are injected, no globals leak into the brain).
-agent = NevagAgent()
+agent = nebagAgent()
 SLUG = agent.settings.api_slug
 
 
@@ -84,7 +84,7 @@ def run_agent(slug: str, body: OneAIRequest):
     """Base One AI data-agent contract. Query may carry a submission_id to
     process/resume an already-ingested submission (mailbox path)."""
     _check_slug(slug)
-    inp = NevagInput(
+    inp = nebagInput(
         query=body.query,
         chat_history=body.chat_history,
         submission_id=body.submission_id,
@@ -99,7 +99,7 @@ def run_agent(slug: str, body: OneAIRequest):
 def run_agent_comprehensive(slug: str, body: OneAIRequest):
     """The 'comprehensive' pass the dynamic-agent router may request. Same brain."""
     _check_slug(slug)
-    inp = NevagInput(query=body.query, chat_history=body.chat_history,
+    inp = nebagInput(query=body.query, chat_history=body.chat_history,
                      submission_id=body.submission_id, app_user_id=body.app_user_id)
     result = agent.run(inp)
     return to_oneai_envelope(result, as_table=True)
@@ -124,7 +124,7 @@ async def upload_submission(
                 "content_b64": base64.b64encode(content).decode(),
             }
         )
-    inp = NevagInput(query=query, app_user_id=app_user_id,
+    inp = nebagInput(query=query, app_user_id=app_user_id,
                      mode=IntakeMode.UPLOAD, files=packaged)
     result = agent.run(inp)
     return to_oneai_envelope(result, as_table=True)

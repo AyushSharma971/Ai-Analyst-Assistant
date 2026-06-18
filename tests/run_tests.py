@@ -19,13 +19,13 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.config import Settings
-from app.contracts import IntakeMode, NevagInput
+from app.contracts import IntakeMode, nebagInput
 from app.document_ai import build_ocr_engine, parse_documents
 from app.embeddings import MockEmbedding, build_embedding_provider
 from app.extraction import coerce, extract_fields, load_extraction_prompt
 from app.registry import AGENT_REGISTRY, describe_registry
 from app.retrieval import chunk_documents, ingest_documents, retrieve
-from app.service import NevagAgent
+from app.service import nebagAgent
 from app.validation import validate_fields
 from app.vectorstore import (
     MemoryVectorStore,
@@ -35,7 +35,7 @@ from app.vectorstore import (
 )
 from scripts.make_fixtures import build_all
 
-_OUT = os.path.join(tempfile.gettempdir(), "nevag_test_out")
+_OUT = os.path.join(tempfile.gettempdir(), "nebag_test_out")
 _PATHS = build_all()
 _RATER = _PATHS.pop("rater_template")
 _FILES = [{"filename": os.path.basename(p), "path": p} for p in _PATHS.values()]
@@ -62,8 +62,8 @@ def settings(**over):
 
 
 def run_pipeline(**over):
-    return NevagAgent(settings=settings(**over)).run(
-        NevagInput(query="New D&O submission", mode=IntakeMode.UPLOAD, files=list(_FILES))
+    return nebagAgent(settings=settings(**over)).run(
+        nebagInput(query="New D&O submission", mode=IntakeMode.UPLOAD, files=list(_FILES))
     )
 
 
@@ -116,7 +116,7 @@ def test_grounding_gate():
 def test_config_driven_risk_rules():
     from app.agents import RiskReasoningAgent, AgentContext
     from app.llm import MockLLM
-    rr = write_json("nevag_risk_test.json", {
+    rr = write_json("nebag_risk_test.json", {
         "rules": [{"attribute": "mfa_enabled", "when": {"equals": True}, "flag": "TESTFLAG", "weight": 5}],
         "bands": [{"level": "elevated", "min_score": 5}, {"level": "standard", "min_score": 0}],
     })
@@ -139,8 +139,8 @@ def test_autofill_preserves_formula():
 
 
 def test_copilot_grounded():
-    agent = NevagAgent(settings=settings())
-    res = agent.run(NevagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    agent = nebagAgent(settings=settings())
+    res = agent.run(nebagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
     ans = agent.ask(res.submission_id, "what is the annual revenue?")
     check("copilot: grounded answer cites value", "125000000" in ans["answer"] and ans["grounded"],
           ans["answer"])
@@ -170,7 +170,7 @@ def test_heuristic_fallback_flag():
 def test_prompt_from_config():
     default = load_extraction_prompt(settings())
     check("config: extraction prompt loaded from config", "extraction engine" in default.lower())
-    custom = write_json("nevag_prompt_test.json", {"extraction_system": "CUSTOM-PROMPT-XYZ"})
+    custom = write_json("nebag_prompt_test.json", {"extraction_system": "CUSTOM-PROMPT-XYZ"})
     over = load_extraction_prompt(settings(prompts_path=custom))
     check("config: prompt override takes effect", over == "CUSTOM-PROMPT-XYZ")
 
@@ -218,7 +218,7 @@ def test_qdrant_local_memory():
         check("qdrant: client import (skipped)", True, f"qdrant-client not installed: {exc}")
         return
     client = QdrantClient(":memory:")  # real local Qdrant, no server
-    s = settings(vector_store="qdrant", qdrant_url="http://local", qdrant_collection="nevag_test", embedding_dim=64)
+    s = settings(vector_store="qdrant", qdrant_url="http://local", qdrant_collection="nebag_test", embedding_dim=64)
     store = QdrantVectorStore(s, dim=64, client=client)
     emb = MockEmbedding(64)
     texts = ["alpha revenue", "beta employees"]
@@ -229,14 +229,14 @@ def test_qdrant_local_memory():
          "page_number": 1, "source_type": "pdf", "created_at": "t", "evidence_snippet": "beta"},
     ]
     store.upsert_documents(texts, emb.embed(texts), metas)
-    check("qdrant: dynamic collection created (config name)", client.collection_exists("nevag_test"))
+    check("qdrant: dynamic collection created (config name)", client.collection_exists("nebag_test"))
     top = store.search(emb.embed(["alpha revenue"])[0], top_k=1)
     check("qdrant: nearest match", top and top[0]["payload"]["document_id"] == "d1", str(top))
     filt = store.search(emb.embed(["x"])[0], top_k=5, filters={"submission_id": "subB"})
     check("qdrant: filter by submission", bool(filt) and all(h["payload"]["submission_id"] == "subB" for h in filt))
     store.delete_by_document_id("d1")
     hc = store.health_check()
-    check("qdrant: health_check enabled + collection listed", hc["enabled"] and "nevag_test" in hc["collections"], str(hc))
+    check("qdrant: health_check enabled + collection listed", hc["enabled"] and "nebag_test" in hc["collections"], str(hc))
 
 
 def test_factory_and_startup_validation():
@@ -267,8 +267,8 @@ def test_ingest_and_retrieve():
 
 
 def test_service_retrieve():
-    agent = NevagAgent(settings=settings())
-    res = agent.run(NevagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    agent = nebagAgent(settings=settings())
+    res = agent.run(nebagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
     check("service: ingestion report on result", res.retrieval and res.retrieval["chunks"] > 0,
           str(res.retrieval))
     hits = agent.retrieve(res.submission_id, "annual revenue")
@@ -308,8 +308,8 @@ def test_embedding_cache_reuses():
 
 def test_rag_extraction_and_citations():
     s = settings(rag_extraction_enabled=True, embedding_provider="mock")
-    agent = NevagAgent(settings=s)
-    res = agent.run(NevagInput(query="New D&O submission", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    agent = nebagAgent(settings=s)
+    res = agent.run(nebagInput(query="New D&O submission", mode=IntakeMode.UPLOAD, files=list(_FILES)))
     approved = [f for f in res.fields if f.status.value == "approved"]
     check("rag: extraction still finds fields", len(res.fields) >= 5, f"{len(res.fields)} fields")
     # at least one field came through the RAG path with citations
@@ -321,8 +321,8 @@ def test_rag_extraction_and_citations():
 
 def test_rag_determinism():
     s = settings(rag_extraction_enabled=True, embedding_provider="mock")
-    a = NevagAgent(settings=s).run(NevagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
-    b = NevagAgent(settings=s).run(NevagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    a = nebagAgent(settings=s).run(nebagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    b = nebagAgent(settings=s).run(nebagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
     check("rag: deterministic output_hash with RAG on",
           a.audit["output_hash"] == b.audit["output_hash"],
           f"{a.audit['output_hash']} != {b.audit['output_hash']}")
@@ -385,7 +385,7 @@ def test_hybrid_search_pipeline():
     from app.retrieval import Retriever
     from app.document_ai import build_ocr_engine, parse_documents
     s = settings(retrieval_hybrid=True, mmr_enabled=True, rerank_provider="heuristic")
-    agent = NevagAgent(settings=s)
+    agent = nebagAgent(settings=s)
     docs = parse_documents(list(_FILES), s, build_ocr_engine(s))
     agent.retriever.ingest(docs, "subH")
     hits = agent.retriever.search("annual revenue", top_k=3, filters={"submission_id": "subH"})
@@ -472,7 +472,7 @@ def test_metrics_surfaced():
 
 
 def test_component_health_introspection():
-    agent = NevagAgent(settings=settings())
+    agent = nebagAgent(settings=settings())
     check("health: llm exposes is_available", hasattr(agent.llm, "is_available"))
     check("health: ocr exposes availability", hasattr(agent._ocr, "available"))
     check("health: embedder is_available callable", agent.embedder.is_available() in (True, False))
@@ -490,8 +490,8 @@ def test_parallel_doc_ai_deterministic():
 
 
 def test_slim_persisted_state():
-    agent = NevagAgent(settings=settings())
-    res = agent.run(NevagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    agent = nebagAgent(settings=settings())
+    res = agent.run(nebagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
     stored = agent.store.load(res.submission_id)
     check("slim state: raw files dropped", "files" not in stored)
     docs = stored.get("parsed_documents", [])
@@ -524,7 +524,7 @@ def test_sqlite_embedding_cache_persists():
         def is_available(self): return True
         def embed(self, texts): self.calls += len(texts); return [[0.0] * 4 for _ in texts]
 
-    path = os.path.join(tempfile.gettempdir(), "nevag_emb_cache_test.db")
+    path = os.path.join(tempfile.gettempdir(), "nebag_emb_cache_test.db")
     if os.path.exists(path):
         os.remove(path)
     inner1 = Counting()
@@ -536,9 +536,9 @@ def test_sqlite_embedding_cache_persists():
 
 
 def test_per_attribute_rag_prompts():
-    agent = NevagAgent(settings=settings(
+    agent = nebagAgent(settings=settings(
         rag_extraction_enabled=True, embedding_provider="mock", rag_per_attribute_prompts=True))
-    res = agent.run(NevagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
+    res = agent.run(nebagInput(query="x", mode=IntakeMode.UPLOAD, files=list(_FILES)))
     rag = [d for d in res.audit["decisions"] if d.get("retrieval_method") == "rag"]
     check("per-attribute RAG: fields extracted with rag method", len(res.fields) >= 4 and len(rag) >= 1,
           f"fields={len(res.fields)} rag={len(rag)}")
@@ -546,13 +546,13 @@ def test_per_attribute_rag_prompts():
 
 def test_duplicate_attribute_reconciliation():
     from app.extraction import reconcile_fields
-    # Two materially-different revenue values for the SAME attribute (FRoSTA case).
+    # Two materially-different revenue values for the SAME attribute (froste case).
     dup = [
         {"name": "annual_revenue", "value": 639480000, "confidence": 1.0, "status": "approved",
          "source_document": "Halbjahresfinanzbericht.pdf", "source_type": "digital_pdf"},
         {"name": "annual_revenue", "value": 315941000, "confidence": 1.0, "status": "approved",
          "source_document": "Halbjahresfinanzbericht.pdf", "source_type": "digital_pdf"},
-        {"name": "insured_name", "value": "FRoSTA AG", "confidence": 1.0, "status": "approved",
+        {"name": "insured_name", "value": "froste AG", "confidence": 1.0, "status": "approved",
          "source_document": "email.eml", "source_type": "email"},
     ]
     out = reconcile_fields(dup, settings())
@@ -658,8 +658,8 @@ def test_dropdown_value_mapping():
     from openpyxl.worksheet.datavalidation import DataValidation
     from app.excel_autofill import fill_rater, load_value_mappings
 
-    tpath = os.path.join(tempfile.gettempdir(), "nevag_dd_template.xlsx")
-    opath = os.path.join(tempfile.gettempdir(), "nevag_dd_filled.xlsx")
+    tpath = os.path.join(tempfile.gettempdir(), "nebag_dd_template.xlsx")
+    opath = os.path.join(tempfile.gettempdir(), "nebag_dd_filled.xlsx")
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Rater"
@@ -727,7 +727,7 @@ def test_local_stack_defaults():
 
 def test_sqlite_state_store():
     from app.store import SqliteStateStore, build_state_store
-    path = os.path.join(tempfile.gettempdir(), "nevag_state_test.db")
+    path = os.path.join(tempfile.gettempdir(), "nebag_state_test.db")
     if os.path.exists(path):
         os.remove(path)
     url = "sqlite:///" + path.replace("\\", "/")

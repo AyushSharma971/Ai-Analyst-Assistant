@@ -5,8 +5,8 @@ Agent Marketplace with no frontend deploy. This module builds the registration
 payload and (optionally) POSTs it.
 
 What's certain (from the One AI README, captured in the design record):
-  - AgentName = "Nevag Submission Triage"; AgentSource = "agent studio".
-  - Slug rule: AgentName.lower().replace(" ", "_") -> "nevag_submission_triage".
+  - AgentName = "nebag Submission Triage"; AgentSource = "agent studio".
+  - Slug rule: AgentName.lower().replace(" ", "_") -> "nebag_submission_triage".
   - The frontend calls a data agent at {AGENT_BACKEND_URL}/{slug} with
     { chat_history, query } and expects { result: { response, token_data? } }.
 
@@ -32,7 +32,7 @@ def build_registration_payload(settings: Settings, base_url: Optional[str] = Non
         # --- Certain fields (from the README) ---
         "AgentName": settings.agent_name,
         "AgentSource": settings.agent_source,          # "agent studio"
-        "AgentSlug": slug,                              # nevag_submission_triage
+        "AgentSlug": slug,                              # nebag_submission_triage
         "AgentDescription": settings.agent_description,
         # --- Host/contract wiring (field names assumed; values correct) ---
         "AgentBackendUrl": base,                        # frontend calls {base}/{slug}
@@ -76,11 +76,11 @@ def register_agent(
 
     Integration point — NOT exercised here (needs the core-backend URL + auth).
     Uses stdlib urllib so it adds no dependency. Returns a small result dict.
-    Timeout is config-driven (NEVAG_REGISTRATION_TIMEOUT_SECONDS) unless overridden.
+    Timeout is config-driven (nebag_REGISTRATION_TIMEOUT_SECONDS) unless overridden.
     """
     url = register_url or settings.oneai_register_url
     if not url:
-        raise RuntimeError("No registration URL (set NEVAG_ONEAI_REGISTER_URL or pass register_url).")
+        raise RuntimeError("No registration URL (set nebag_ONEAI_REGISTER_URL or pass register_url).")
     payload = payload or build_registration_payload(settings)
     if timeout is None:
         timeout = float(getattr(settings, "registration_timeout_seconds", 30.0))

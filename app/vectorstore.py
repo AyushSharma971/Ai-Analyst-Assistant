@@ -1,6 +1,6 @@
 """Vector store behind a configurable adapter interface.
 
-The retrieval backend is pluggable (NEVAG_VECTOR_STORE):
+The retrieval backend is pluggable (nebag_VECTOR_STORE):
   - qdrant       : QdrantVectorStore (default; this is the migration target)
   - azure_search : AzureAISearchVectorStore (kept as optional fallback)
   - memory       : MemoryVectorStore (deterministic, dependency-free; offline/tests)
@@ -115,7 +115,7 @@ class QdrantVectorStore:
 
         url = self._s.qdrant_url
         if not url:
-            raise RuntimeError("NEVAG_QDRANT_URL is required for the qdrant vector store.")
+            raise RuntimeError("nebag_QDRANT_URL is required for the qdrant vector store.")
         # API key optional -> local unauthenticated Qdrant is allowed.
         self._client = QdrantClient(url=url, api_key=self._s.qdrant_api_key or None)
         return self._client
@@ -282,11 +282,11 @@ def validate_vector_store_config(settings: Settings) -> Dict[str, Any]:
         return {
             "enabled": ok,
             "backend": "azure_search",
-            "reason": "configured" if ok else "NEVAG_AZURE_SEARCH_ENDPOINT/API_KEY not set",
+            "reason": "configured" if ok else "nebag_AZURE_SEARCH_ENDPOINT/API_KEY not set",
         }
     if backend == "qdrant":
         if not settings.qdrant_url:
-            return {"enabled": False, "backend": "qdrant", "reason": "NEVAG_QDRANT_URL not set"}
+            return {"enabled": False, "backend": "qdrant", "reason": "nebag_QDRANT_URL not set"}
         auth = "authenticated" if settings.qdrant_api_key else "unauthenticated (local)"
         return {
             "enabled": True,

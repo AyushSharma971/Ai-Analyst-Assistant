@@ -67,7 +67,7 @@ class AttributeSpec:
 
 
 # Last-resort built-in seed if no catalog file is found. The real catalog lives
-# in config/attribute_catalog.json (or NEVAG_ATTRIBUTE_CATALOG_PATH) — this dict
+# in config/attribute_catalog.json (or nebag_ATTRIBUTE_CATALOG_PATH) — this dict
 # is only a safety net so the engine never hard-fails with no config at all.
 _BUILTIN_SEED: Dict[str, AttributeSpec] = {
     "insured_name": AttributeSpec(
@@ -87,7 +87,7 @@ _BUNDLED_CATALOG_PATH = os.path.join(
 def load_catalog(settings: Optional[Settings] = None) -> Dict[str, AttributeSpec]:
     """Load the attribute catalog from config (the 'how' of extraction).
 
-    Order: NEVAG_ATTRIBUTE_CATALOG_PATH -> bundled config file -> built-in seed.
+    Order: nebag_ATTRIBUTE_CATALOG_PATH -> bundled config file -> built-in seed.
     Nothing about which attributes exist or how they're typed is baked into code.
     """
     path = (getattr(settings, "attribute_catalog_path", None) if settings else None)

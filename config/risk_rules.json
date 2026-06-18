@@ -1,5 +1,5 @@
 {
-  "_comment": "Risk reasoning rules + scoring bands (config-driven, agent #12). Each rule fires on an attribute/value condition (when: equals/gte/lte/gt/lt/present/in) and contributes a weight + explainable flag. The level is the highest band whose min_score <= total weight. Override path with NEVAG_RISK_RULES_PATH.",
+  "_comment": "Risk reasoning rules + scoring bands (config-driven, agent #12). Each rule fires on an attribute/value condition (when: equals/gte/lte/gt/lt/present/in) and contributes a weight + explainable flag. The level is the highest band whose min_score <= total weight. Override path with nebag_RISK_RULES_PATH.",
   "rules": [
     {"attribute": "mfa_enabled", "when": {"equals": false}, "flag": "MFA not enabled", "weight": 1},
     {"attribute": "prior_claims_count", "when": {"gte": 1}, "flag": "prior claim(s) present", "weight": 1},

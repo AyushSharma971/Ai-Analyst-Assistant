@@ -1,4 +1,4 @@
-"""Workflow state + the Nevag workflow template (LangGraph) with checkpointed HITL.
+"""Workflow state + the nebag workflow template (LangGraph) with checkpointed HITL.
 
 Reusable orchestration skeleton from the architecture doc:
 Start -> Intake -> Rater/Doc/Extraction/... -> If/Else (missing) ->
@@ -14,7 +14,7 @@ Two executors behind one interface (`.run(state)` / `.resume(state)`):
     Pythons where wheels may lag.
 
 Checkpoint persistence: MemorySaver by default, PostgresSaver when
-NEVAG_DATABASE_URL + langgraph's postgres extra are available (integration point;
+nebag_DATABASE_URL + langgraph's postgres extra are available (integration point;
 not exercised without a live DB).
 """
 
@@ -193,7 +193,7 @@ class _LangGraphWorkflow:
 def build_checkpointer(settings):
     """Return a LangGraph checkpointer, or None if langgraph isn't installed.
 
-    PostgresSaver when NEVAG_DATABASE_URL + langgraph-postgres are available
+    PostgresSaver when nebag_DATABASE_URL + langgraph-postgres are available
     (integration point), otherwise MemorySaver.
     """
     try:

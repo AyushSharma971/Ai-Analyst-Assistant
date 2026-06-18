@@ -1,9 +1,9 @@
-"""Register the Nevag agent with the One AI core backend (or just print payload).
+"""Register the nebag agent with the One AI core backend (or just print payload).
 
     # Print the payload (no network):
     python scripts/register_agent.py
 
-    # Actually register (needs NEVAG_ONEAI_REGISTER_URL or --url):
+    # Actually register (needs nebag_ONEAI_REGISTER_URL or --url):
     python scripts/register_agent.py --post --url https://<core-backend>/agents \
         --backend-url https://<this-service-host>
 
@@ -23,7 +23,7 @@ from app.registration import build_registration_payload, register_agent
 def main() -> None:
     ap = argparse.ArgumentParser(description="Build/POST the One AI registration payload.")
     ap.add_argument("--post", action="store_true", help="POST to the core backend")
-    ap.add_argument("--url", help="core-backend registration URL (else NEVAG_ONEAI_REGISTER_URL)")
+    ap.add_argument("--url", help="core-backend registration URL (else nebag_ONEAI_REGISTER_URL)")
     ap.add_argument("--backend-url", help="public URL of THIS service ({base}/{slug})")
     args = ap.parse_args()
 

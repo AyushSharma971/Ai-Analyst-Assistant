@@ -13,8 +13,8 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.config import Settings, _env_overlay
-from app.contracts import IntakeMode, NevagInput
-from app.service import NevagAgent
+from app.contracts import IntakeMode, nebagInput
+from app.service import nebagAgent
 
 
 def main():
@@ -41,8 +41,8 @@ def main():
     print(f"FILE: {os.path.basename(arg)} ({os.path.getsize(arg)} bytes)\n")
 
     t0 = time.time()
-    agent = NevagAgent(settings=s)
-    res = agent.run(NevagInput(query="Process this D&O submission.", mode=IntakeMode.UPLOAD,
+    agent = nebagAgent(settings=s)
+    res = agent.run(nebagInput(query="Process this D&O submission.", mode=IntakeMode.UPLOAD,
                                files=[{"filename": os.path.basename(arg), "path": arg}]))
     elapsed = time.time() - t0
 

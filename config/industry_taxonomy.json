@@ -1,5 +1,5 @@
 {
-  "_comment": "Industry & Product detection taxonomy (agent #6). Config-driven: keywords -> industry, and industry -> likely product. Edit without code. Override path with NEVAG_INDUSTRY_TAXONOMY_PATH.",
+  "_comment": "Industry & Product detection taxonomy (agent #6). Config-driven: keywords -> industry, and industry -> likely product. Edit without code. Override path with nebag_INDUSTRY_TAXONOMY_PATH.",
   "industries": {
     "Healthcare": ["healthcare", "hospital", "clinic", "medical", "phi", "patient", "health systems"],
     "Technology/SaaS": ["saas", "software", "cloud", "platform", "technology", "fintech"],

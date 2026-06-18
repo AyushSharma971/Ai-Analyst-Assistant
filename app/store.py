@@ -6,7 +6,7 @@ by submission_id, and a separate resume call continues the workflow.
 
 Two implementations behind one interface (injected, never a global):
   - InMemoryStateStore : default; zero dependencies; fine for dev/standalone.
-  - PostgresStateStore  : production; NEVAG_DATABASE_URL + psycopg. Stores the
+  - PostgresStateStore  : production; nebag_DATABASE_URL + psycopg. Stores the
                           workflow state as JSONB keyed by submission_id.
 
 build_state_store(settings) picks Postgres when a database_url is configured and
@@ -53,7 +53,7 @@ class SqliteStateStore:
     stored as a JSON column keyed by submission_id. Good default for local runs
     that need persistence across restarts without standing up Postgres."""
 
-    _TABLE = "nevag_submission_state"
+    _TABLE = "nebag_submission_state"
 
     def __init__(self, path: str) -> None:
         import sqlite3
@@ -113,11 +113,11 @@ class PostgresStateStore:
     raises if either is missing so build_state_store can fall back cleanly.
     """
 
-    _TABLE = "nevag_submission_state"
+    _TABLE = "nebag_submission_state"
 
     def __init__(self, settings: Settings) -> None:
         if not settings.database_url:
-            raise RuntimeError("PostgresStateStore requires NEVAG_DATABASE_URL")
+            raise RuntimeError("PostgresStateStore requires nebag_DATABASE_URL")
         try:
             import psycopg  # noqa: F401  (lazy; only needed for this backend)
         except Exception as exc:  # pragma: no cover - depends on optional dep
@@ -176,7 +176,7 @@ class PostgresStateStore:
 
 
 def build_state_store(settings: Settings) -> StateStore:
-    """Factory chosen by NEVAG_DATABASE_URL. Local-first: sqlite:// for a file-
+    """Factory chosen by nebag_DATABASE_URL. Local-first: sqlite:// for a file-
     backed store; postgres(ql):// for Postgres; otherwise in-memory. Any failure
     degrades to in-memory (with a warning) so local runs never hard-fail."""
     url = getattr(settings, "database_url", None)

@@ -1,15 +1,15 @@
-"""Centralized, injected configuration for the Nevag agent.
+"""Centralized, injected configuration for the nebag agent.
 
 Integration rule: NOTHING in this service reads os.environ directly. Everything
 flows through a Settings object that is *passed in* at construction time. This is
-what lets Nevag drop into the One AI chatbot (or any host) without colliding with
+what lets nebag drop into the One AI chatbot (or any host) without colliding with
 the host's own config / DB pools / clients.
 
-All variables are namespaced with the NEVAG_ prefix so they never clash with the
+All variables are namespaced with the nebag_ prefix so they never clash with the
 host app's variables (BACKEND_API_URL, AZURE_OPENAI_*, etc.).
 
 Single source of truth: fields are declared ONCE on the pydantic model below.
-`get_settings()` overlays NEVAG_* environment variables (and an optional .env)
+`get_settings()` overlays nebag_* environment variables (and an optional .env)
 generically by iterating model fields — so there is no duplicated field list to
 drift. Tests/hosts construct Settings(**kwargs) directly (no env coupling).
 """
@@ -29,7 +29,7 @@ class Settings(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     # --- Service identity -----------------------------------------------------
-    agent_name: str = "Nevag Submission Triage"
+    agent_name: str = "nebag Submission Triage"
     environment: str = "dev"
 
     # --- One AI registration (marketplace) ------------------------------------
@@ -97,7 +97,7 @@ class Settings(BaseModel):
     industry_taxonomy_path: Optional[str] = None
     ontology_rules_path: Optional[str] = None
     risk_rules_path: Optional[str] = None
-    canonical_schema_version: str = "nevag-canonical-v1"
+    canonical_schema_version: str = "nebag-canonical-v1"
     prompt_version: str = "extraction-v1"
 
     # --- External research ----------------------------------------------------
@@ -120,10 +120,10 @@ class Settings(BaseModel):
     vector_store: str = "qdrant"               # qdrant | azure_search | memory | none
     qdrant_url: Optional[str] = None
     qdrant_api_key: Optional[str] = None
-    qdrant_collection: str = "nevag_documents"
+    qdrant_collection: str = "nebag_documents"
     azure_search_endpoint: Optional[str] = None
     azure_search_api_key: Optional[str] = None
-    azure_search_index: str = "nevag-documents"
+    azure_search_index: str = "nebag-documents"
     embedding_provider: str = "ollama"         # ollama | sentence_transformers | mock | azure_openai
     embedding_model: str = "bge-m3"
     embedding_deployment: str = "chatbot-text-embedding-ada-002"  # azure-only
@@ -180,8 +180,8 @@ class Settings(BaseModel):
         return self.agent_name.lower().replace(" ", "_")
 
 
-# Host-app (One AI) env names that Nevag fields may fall back to when the
-# NEVAG_-prefixed var isn't set — so an existing host .env works without renaming.
+# Host-app (One AI) env names that nebag fields may fall back to when the
+# nebag_-prefixed var isn't set — so an existing host .env works without renaming.
 # (Values are read at runtime; nothing is stored in code.)
 _HOST_ALIASES: Dict[str, str] = {
     "azure_openai_endpoint": "AZURE_OPENAI_ENDPOINT",
@@ -207,9 +207,9 @@ _HOST_ALIASES: Dict[str, str] = {
 
 
 def _env_overlay() -> Dict[str, Any]:
-    """Collect NEVAG_* values from .env (if python-dotenv present) + os.environ,
+    """Collect nebag_* values from .env (if python-dotenv present) + os.environ,
     mapped to field names. Falls back to known host-app names (One AI) when a
-    NEVAG_ var is absent. Pydantic coerces the string values to field types."""
+    nebag_ var is absent. Pydantic coerces the string values to field types."""
     sources: Dict[str, str] = {}
     try:  # optional .env support; os.environ always wins
         from dotenv import dotenv_values
@@ -221,7 +221,7 @@ def _env_overlay() -> Dict[str, Any]:
 
     out: Dict[str, Any] = {}
     for name in Settings.model_fields:
-        env_key = "NEVAG_" + name.upper()
+        env_key = "nebag_" + name.upper()
         if env_key in sources and sources[env_key] != "":
             out[name] = sources[env_key]
         elif name in _HOST_ALIASES and sources.get(_HOST_ALIASES[name]):
@@ -231,10 +231,10 @@ def _env_overlay() -> Dict[str, Any]:
 
 @lru_cache
 def get_settings() -> "Settings":
-    """Default settings singleton for standalone runs — overlays NEVAG_* env vars.
+    """Default settings singleton for standalone runs — overlays nebag_* env vars.
 
     The host app should NOT rely on this; it should construct Settings(...) with
-    its own values and inject them into NevagAgent. This cache exists only for
+    its own values and inject them into nebagAgent. This cache exists only for
     convenient local/standalone execution.
     """
     return Settings(**_env_overlay())

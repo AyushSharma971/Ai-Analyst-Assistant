@@ -641,7 +641,7 @@ class ExplainabilityAuditAgent(Agent):
 # --------------------------------------------------------------------------- #
 class UnderwriterCopilotAgent(Agent):
     """Prepares the grounded Q&A surface. Real questions go through
-    NevagAgent.ask(); here we mark readiness and a sample grounded answer."""
+    nebagAgent.ask(); here we mark readiness and a sample grounded answer."""
 
     name = "underwriter_copilot"
 
@@ -732,7 +732,7 @@ class LearningAgent(Agent):
 
 
 # --------------------------------------------------------------------------- #
-# Nevag workflow template order (doc §8 + registry agents #5/#6/#8 wired in).
+# nebag workflow template order (doc §8 + registry agents #5/#6/#8 wired in).
 # external_research and human_review are gated by conditional edges in workflow.py.
 # --------------------------------------------------------------------------- #
 AGENT_PIPELINE: List[Agent] = [

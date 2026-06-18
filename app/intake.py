@@ -2,7 +2,7 @@
 
 This normalizes whatever arrives into the `files` list the Submission Intake
 Agent expects. Real implementations:
-  - UPLOAD : decode multipart files from the /api/nevag BFF route.
+  - UPLOAD : decode multipart files from the /api/nebag BFF route.
   - MAILBOX: pull .eml/.msg + attachments from Outlook/Graph or Blob/S3.
 Both produce the same shape, so the brain is source-agnostic.
 """
@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from .common import resolve_bytes
 from .config import Settings
-from .contracts import IntakeMode, NevagInput
+from .contracts import IntakeMode, nebagInput
 
 # Backwards-compatible alias: byte resolution now lives in app.common (DRY).
 _file_bytes = resolve_bytes
@@ -74,15 +74,15 @@ def expand_and_fingerprint(files: List[Dict[str, Any]]) -> Tuple[List[Dict[str, 
     return out, lineage
 
 
-def gather_files(inp: NevagInput, settings: Settings) -> List[Dict[str, Any]]:
+def gather_files(inp: nebagInput, settings: Settings) -> List[Dict[str, Any]]:
     if inp.mode == IntakeMode.UPLOAD:
         if not settings.upload_enabled:
-            raise RuntimeError("Upload intake disabled (NEVAG_UPLOAD_ENABLED=false).")
+            raise RuntimeError("Upload intake disabled (nebag_UPLOAD_ENABLED=false).")
         return list(inp.files)
 
     if inp.mode == IntakeMode.MAILBOX:
         if not settings.mailbox_enabled:
-            raise RuntimeError("Mailbox intake disabled (NEVAG_MAILBOX_ENABLED=false).")
+            raise RuntimeError("Mailbox intake disabled (nebag_MAILBOX_ENABLED=false).")
         return _pull_from_mailbox(inp.source_ref or {}, settings)
 
     # REFERENCE: files already attached to a known submission_id (loaded elsewhere)

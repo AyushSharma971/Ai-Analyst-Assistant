@@ -212,8 +212,8 @@ class AzureOpenAIEmbedding:
         s = self._s
         if not self.is_available():
             raise RuntimeError(
-                "Azure OpenAI embeddings not configured: set NEVAG_AZURE_OPENAI_API_KEY "
-                "and NEVAG_AZURE_OPENAI_ENDPOINT, or use NEVAG_EMBEDDING_PROVIDER=mock."
+                "Azure OpenAI embeddings not configured: set nebag_AZURE_OPENAI_API_KEY "
+                "and nebag_AZURE_OPENAI_ENDPOINT, or use nebag_EMBEDDING_PROVIDER=mock."
             )
         self._client = AzureOpenAI(
             api_key=s.azure_openai_api_key,
@@ -243,7 +243,7 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
     """Factory chosen by config. Local-first: Ollama (bge-m3) or sentence-transformers
     (MiniLM); Azure is an OPTIONAL adapter. Any unavailable local/cloud backend
     degrades to the deterministic MockEmbedding so offline stays reproducible.
-    Optionally wrapped with a content-hash cache (NEVAG_EMBEDDING_CACHE_ENABLED)."""
+    Optionally wrapped with a content-hash cache (nebag_EMBEDDING_CACHE_ENABLED)."""
     provider = (settings.embedding_provider or "ollama").lower()
     dim = int(settings.embedding_dim)
 
@@ -271,7 +271,7 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
     if getattr(settings, "embedding_cache_enabled", True):
         cache = None
         if (getattr(settings, "embedding_cache_backend", "memory") or "memory").lower() == "sqlite":
-            path = settings.embedding_cache_path or os.path.join(os.getcwd(), "nevag_emb_cache.db")
+            path = settings.embedding_cache_path or os.path.join(os.getcwd(), "nebag_emb_cache.db")
             try:
                 cache = SqliteVectorCache(path)
             except Exception:

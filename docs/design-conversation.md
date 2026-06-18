@@ -1,5 +1,5 @@
 
-# Nevag Submission Triage Agent — Design Record
+# nebag Submission Triage Agent — Design Record
 
 > A reconstructed record of the design conversation and decisions behind this
 > service. Lives alongside the code so the *why* travels with the *what*.
@@ -9,7 +9,7 @@
 
 ## 1. Goal of the project
 
-Build the **Nevag Submission Triage Agent**: an underwriting agent that takes
+Build the **nebag Submission Triage Agent**: an underwriting agent that takes
 messy submissions (email + PDFs, scanned PDFs, Excel, Word, images, ZIPs),
 extracts every attribute a carrier's Excel **rater** requires, validates each
 value against evidence, and safely fills the rater — evidence-backed, governed,
@@ -18,7 +18,7 @@ explainable, and reproducible.
 Two-part intent:
 1. A **reusable agent orchestration platform** (LangGraph executor, agent
    registry, node types, shared workflow state, If/Else routing, HITL, audit).
-2. **Nevag as the first workflow template** on that platform — not hardcoded.
+2. **nebag as the first workflow template** on that platform — not hardcoded.
 
 Source of truth for the full architecture: the *Reusable Agent Workflow
 Architecture* document (19 reusable agents, rater-driven flow, governance model,
@@ -34,7 +34,7 @@ adapter + a registration, **never a rewrite**.
 
 - One AI's repo is a **Next.js frontend + BFF only** — it contains **no agent
   intelligence**. Real agents are **separate backend services** called over HTTP.
-- Therefore Nevag = a **standalone backend service** that:
+- Therefore nebag = a **standalone backend service** that:
   1. runs its own brain, and
   2. exposes the One AI **data-agent contract**:
      ```
@@ -43,18 +43,18 @@ adapter + a registration, **never a rewrite**.
                     token_data? } }
      ```
 - Slug rule: `AgentName.lower().replace(" ", "_")` →
-  "Nevag Submission Triage" → `/nevag_submission_triage`.
+  "nebag Submission Triage" → `/nebag_submission_triage`.
 - Registering the agent in the One AI **core backend** makes it appear in the
   Agent Marketplace with **no frontend deploy**.
 - Org LLM standard: **Azure OpenAI GPT-4.1** (`AZURE_OPENAI_*`, `gpt-4.1`,
   api version `2024-12-01-preview`), low temperature for deterministic extraction.
 
-### Integration traps identified (the data-agent contract vs. Nevag's needs)
+### Integration traps identified (the data-agent contract vs. nebag's needs)
 
 1. **Attachments don't fit `{chat_history, query}`** (text only). Solved by
    supporting two intake paths (below).
 2. **HITL pause/resume has nowhere to live** in a one-shot response → review
-   state must live in Nevag's own store, keyed by `submission_id`, with a
+   state must live in nebag's own store, keyed by `submission_id`, with a
    separate resume call.
 3. **LLM standardization** → default to Azure GPT-4.1 behind a pluggable interface.
 4. **Long processing + delivering the filled Excel** → stream `status:` progress;
@@ -70,9 +70,9 @@ adapter + a registration, **never a rewrite**.
 | LLM default | **Azure OpenAI GPT-4.1**, kept behind a pluggable interface |
 
 ### Integration-safety principles baked in
-- One clean boundary: `NevagAgent.run()` / `.resume()`.
+- One clean boundary: `nebagAgent.run()` / `.resume()`.
 - No globals; all dependencies injected (config, LLM, store).
-- `NEVAG_*`-prefixed config so it never collides with the host's env vars.
+- `nebag_*`-prefixed config so it never collides with the host's env vars.
 - Typed I/O contracts; host envelope mapping isolated to one place.
 - Pluggable LLM / storage.
 - HITL as resumable state, not a blocking call.
@@ -80,14 +80,14 @@ adapter + a registration, **never a rewrite**.
 ## 4. What was built (skeleton, verified runnable)
 
 ```
-nevag-submission-agent/
+nebag-submission-agent/
 ├── app/
 │   ├── main.py        # One AI adapter (the only host-coupled layer)
-│   ├── service.py     # NevagAgent.run()/.resume() — the clean boundary
+│   ├── service.py     # nebagAgent.run()/.resume() — the clean boundary
 │   ├── contracts.py   # internal I/O models + One AI envelope mapping
 │   ├── workflow.py    # WorkflowState + LangGraph graph (+ sequential fallback)
 │   ├── agents.py      # 19 agents as deterministic stubs + pipeline + If/Else
-│   ├── config.py      # injected NEVAG_* settings
+│   ├── config.py      # injected nebag_* settings
 │   ├── llm.py         # pluggable LLM, Azure GPT-4.1 default + mock
 │   ├── intake.py      # both intake paths (upload + mailbox)
 │   └── store.py       # submission state store (HITL pause/resume)
@@ -120,7 +120,7 @@ table of extracted rater fields (value/confidence/source/status) plus `token_dat
 
 ## 6. Integration checklist (when wiring into One AI)
 
-- [ ] Register agent: `AgentName="Nevag Submission Triage"`, `AgentSource="agent studio"`.
+- [ ] Register agent: `AgentName="nebag Submission Triage"`, `AgentSource="agent studio"`.
 - [ ] Host: set `AGENT_BACKEND_URL` (replace hard-coded `dachatbot-05` host).
 - [ ] Keep the `{result.response / table_data}` envelope (already emitted).
 - [ ] Decide filled-rater delivery (blob link / `<<FILE_DATA>>`).

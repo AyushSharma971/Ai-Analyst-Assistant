@@ -11,16 +11,16 @@ from __future__ import annotations
 import json
 
 from app.config import Settings
-from app.contracts import IntakeMode, NevagInput, to_oneai_envelope
-from app.service import NevagAgent
+from app.contracts import IntakeMode, nebagInput, to_oneai_envelope
+from app.service import nebagAgent
 
 
 def main():
     # Inject mock-LLM settings so it runs with zero credentials.
     settings = Settings(llm_provider="mock")
-    agent = NevagAgent(settings=settings)
+    agent = nebagAgent(settings=settings)
 
-    inp = NevagInput(
+    inp = nebagInput(
         query="Process this new D&O submission from Acme Health Systems.",
         mode=IntakeMode.UPLOAD,
         files=[{"filename": "application.pdf", "content_type": "application/pdf"}],
@@ -29,7 +29,7 @@ def main():
 
     result = agent.run(inp)
 
-    print("=== Internal NevagResult ===")
+    print("=== Internal nebagResult ===")
     print(result.model_dump_json(indent=2))
 
     print("\n=== Status trail (node-by-node) ===")

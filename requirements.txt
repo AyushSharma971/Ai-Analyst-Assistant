@@ -12,7 +12,7 @@ langchain-core>=0.3
 # Ollama runtime: install separately (https://ollama.com) and `ollama pull llama3.1`
 #   + `ollama pull bge-m3`. The client uses stdlib HTTP, so NO python package here.
 # sentence-transformers  # optional local embeddings (all-MiniLM-L6-v2)
-# openai                 # OPTIONAL cloud adapter only (NEVAG_*_PROVIDER=azure_openai)
+# openai                 # OPTIONAL cloud adapter only (nebag_*_PROVIDER=azure_openai)
 
 # --- Document AI / extraction (implemented: app/document_ai.py) ---
 pymupdf>=1.24        # digital PDF text + page render for OCR

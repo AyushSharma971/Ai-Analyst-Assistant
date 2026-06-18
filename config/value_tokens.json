@@ -1,5 +1,5 @@
 {
-  "_comment": "Boolean coercion + grounding tokens (config-driven). Used to convert text like 'Yes'/'Enabled' to booleans during extraction, and to check boolean grounding during validation. Override path with NEVAG_VALUE_TOKENS_PATH.",
+  "_comment": "Boolean coercion + grounding tokens (config-driven). Used to convert text like 'Yes'/'Enabled' to booleans during extraction, and to check boolean grounding during validation. Override path with nebag_VALUE_TOKENS_PATH.",
   "true": ["yes", "y", "true", "enabled", "t", "1"],
   "false": ["no", "n", "false", "disabled", "f", "0", "none"]
 }

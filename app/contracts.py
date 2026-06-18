@@ -1,8 +1,8 @@
-"""I/O contracts for the Nevag agent.
+"""I/O contracts for the nebag agent.
 
 Two layers, deliberately separated:
 
-1. INTERNAL contract (NevagInput / NevagResult) — what the Nevag brain speaks.
+1. INTERNAL contract (nebagInput / nebagResult) — what the nebag brain speaks.
    Stable, host-agnostic. Everything inside the service uses these.
 
 2. HOST envelope (One AI data-agent contract) — what the One AI chatbot expects.
@@ -53,8 +53,8 @@ class IntakeMode(str, Enum):
     REFERENCE = "reference"  # query references an existing submission_id
 
 
-class NevagInput(BaseModel):
-    """The stable internal entry contract for the Nevag brain."""
+class nebagInput(BaseModel):
+    """The stable internal entry contract for the nebag brain."""
 
     query: str = ""                                   # chat text / instruction
     chat_history: List[Dict[str, Any]] = Field(default_factory=list)
@@ -67,7 +67,7 @@ class NevagInput(BaseModel):
     app_user_id: Optional[str] = None                 # carry attribution through
 
 
-class NevagResult(BaseModel):
+class nebagResult(BaseModel):
     """The stable internal result contract."""
 
     submission_id: str
@@ -94,8 +94,8 @@ class NevagResult(BaseModel):
 # --------------------------------------------------------------------------- #
 # One AI host envelope mapping (the only host-coupled code)
 # --------------------------------------------------------------------------- #
-def to_oneai_envelope(result: NevagResult, as_table: bool = True) -> Dict[str, Any]:
-    """Map an internal NevagResult to the One AI data-agent response envelope.
+def to_oneai_envelope(result: nebagResult, as_table: bool = True) -> Dict[str, Any]:
+    """Map an internal nebagResult to the One AI data-agent response envelope.
 
     Default (generic-runner-first): return extracted fields as a TABLE so the
     existing AG-Table renderer shows them, with the human summary attached in
@@ -147,6 +147,6 @@ class OneAIRequest(BaseModel):
 
     chat_history: List[Dict[str, Any]] = Field(default_factory=list)
     query: str = ""
-    # Optional extensions Nevag understands (ignored by generic runner):
+    # Optional extensions nebag understands (ignored by generic runner):
     submission_id: Optional[str] = None
     app_user_id: Optional[str] = None

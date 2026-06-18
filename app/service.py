@@ -1,7 +1,7 @@
-"""NevagAgent — THE single clean boundary.
+"""nebagAgent — THE single clean boundary.
 
 Everything the host needs goes through this class. Host integration = construct
-one NevagAgent (with injected Settings + optional LLM/store) and call run()/resume().
+one nebagAgent (with injected Settings + optional LLM/store) and call run()/resume().
 No globals, no host coupling here.
 """
 
@@ -17,8 +17,8 @@ from .contracts import (
     ExtractedField,
     FieldStatus,
     IntakeMode,
-    NevagInput,
-    NevagResult,
+    nebagInput,
+    nebagResult,
 )
 from .embeddings import EmbeddingProvider, build_embedding_provider
 from .intake import gather_files
@@ -30,7 +30,7 @@ from .vectorstore import VectorStore, build_vector_store, validate_vector_store_
 from .workflow import WorkflowState, build_checkpointer, build_workflow
 
 
-class NevagAgent:
+class nebagAgent:
     def __init__(
         self,
         settings: Optional[Settings] = None,
@@ -78,7 +78,7 @@ class NevagAgent:
             out.setdefault("status_trail", []).append(f"retrieval: skipped ({exc})")
 
     # --- main entry --------------------------------------------------------- #
-    def run(self, inp: NevagInput) -> NevagResult:
+    def run(self, inp: nebagInput) -> nebagResult:
         files = gather_files(inp, self.settings)
         state: WorkflowState = {
             "query": inp.query,
@@ -148,7 +148,7 @@ class NevagAgent:
         return self.retriever.search(query, top_k=k, filters={"submission_id": submission_id})
 
     # --- HITL resume -------------------------------------------------------- #
-    def resume(self, submission_id: str, corrections: List[Dict[str, Any]]) -> NevagResult:
+    def resume(self, submission_id: str, corrections: List[Dict[str, Any]]) -> nebagResult:
         """Apply human corrections and CONTINUE from the HITL checkpoint.
 
         Unlike a full re-run, this picks up just after the human_review node and
@@ -181,7 +181,7 @@ class NevagAgent:
 
     # --- mapping ------------------------------------------------------------ #
     @staticmethod
-    def _to_result(state: WorkflowState) -> NevagResult:
+    def _to_result(state: WorkflowState) -> nebagResult:
         fields = [
             ExtractedField(
                 name=f["name"],
@@ -204,7 +204,7 @@ class NevagAgent:
             f"approved, {len(missing)} missing. "
             + ("Human review required." if review else "Ready for autofill.")
         )
-        return NevagResult(
+        return nebagResult(
             submission_id=state["submission_id"],
             summary=summary,
             fields=fields,

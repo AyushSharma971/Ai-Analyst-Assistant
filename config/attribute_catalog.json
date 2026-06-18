@@ -1,5 +1,5 @@
 {
-  "_comment": "Attribute extraction + validation catalog. The 'HOW' of Semantic Extraction AND the 'rules' of Truth Validation. Which attributes are REQUIRED is decided by the rater (RaterTemplateAgent); this file describes how to extract/interpret/validate each one. Edit freely without touching code. Override the path with NEVAG_ATTRIBUTE_CATALOG_PATH. dtype: string | number | integer | boolean. constraints: {required, min, max, allowed, pattern}.",
+  "_comment": "Attribute extraction + validation catalog. The 'HOW' of Semantic Extraction AND the 'rules' of Truth Validation. Which attributes are REQUIRED is decided by the rater (RaterTemplateAgent); this file describes how to extract/interpret/validate each one. Edit freely without touching code. Override the path with nebag_ATTRIBUTE_CATALOG_PATH. dtype: string | number | integer | boolean. constraints: {required, min, max, allowed, pattern}.",
   "attributes": {
     "insured_name": {
       "description": "Legal name of the insured entity",

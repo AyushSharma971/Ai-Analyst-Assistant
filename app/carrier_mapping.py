@@ -3,7 +3,7 @@
 
 Decides WHERE each approved value goes in the carrier's Excel rater. Fully
 config-driven: the attribute->cell map lives in config/carrier_mapping.json (or
-NEVAG_CARRIER_MAPPING_PATH), keyed by carrier, so onboarding a new carrier or
+nebag_CARRIER_MAPPING_PATH), keyed by carrier, so onboarding a new carrier or
 moving a cell is a config edit, not a code change.
 
 Only APPROVED fields are mapped — review/rejected/missing never reach autofill.

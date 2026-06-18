@@ -98,7 +98,7 @@ class NullOCR:
 
 class TesseractOCR:
     """Local OCR via pytesseract. Requires both the `pytesseract` package and
-    the Tesseract binary on PATH (or NEVAG_TESSERACT_CMD)."""
+    the Tesseract binary on PATH (or nebag_TESSERACT_CMD)."""
 
     name = "tesseract"
 
@@ -151,7 +151,7 @@ class TesseractOCR:
 
 class AzureDocIntelOCR:
     """OCR via Azure AI Document Intelligence — the One AI org's cloud standard.
-    Requires `azure-ai-documentintelligence` + NEVAG_AZURE_DOC_INTEL_* config."""
+    Requires `azure-ai-documentintelligence` + nebag_AZURE_DOC_INTEL_* config."""
 
     name = "azure_doc_intel"
 
@@ -194,7 +194,7 @@ class AzureDocIntelOCR:
 def build_ocr_engine(settings: Settings) -> OCREngine:
     """Factory: choose OCR backend by config, with sensible auto-detection.
 
-    NEVAG_OCR_PROVIDER: auto (default) | azure_doc_intel | tesseract | none
+    nebag_OCR_PROVIDER: auto (default) | azure_doc_intel | tesseract | none
     """
     provider = (getattr(settings, "ocr_provider", "auto") or "auto").lower()
     if provider == "none":
@@ -568,7 +568,7 @@ def parse_documents(
 ) -> List[Dict[str, Any]]:
     """Parse the whole submission. Returns one ParsedDocument per input file.
 
-    Per-file parsing can run in parallel (NEVAG_DOC_AI_MAX_WORKERS > 1); results are
+    Per-file parsing can run in parallel (nebag_DOC_AI_MAX_WORKERS > 1); results are
     reassembled in INPUT ORDER, so output is identical regardless of worker count
     (deterministic). Default 1 = sequential."""
     ctx = ParseContext(settings, ocr)

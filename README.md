@@ -26,7 +26,7 @@ and **clean provider interfaces** so cloud services are optional adapters.
 | Intake | manual upload | **SharePoint** (ACS app-only) | — |
 | Research (#10) | — | **Perplexity** (sonar) | none (never invents) |
 | Workflow | **LangGraph** + checkpointing | — | sequential executor |
-| Config | JSON files + `NEVAG_*` env | host-name alias loader | built-in defaults |
+| Config | JSON files + `nebag_*` env | host-name alias loader | built-in defaults |
 
 > The proxy on the validated environment blocks third-party model registries
 > (Ollama/Perplexity) but allows the org's Azure OpenAI + SharePoint — so the
@@ -41,21 +41,21 @@ and **clean provider interfaces** so cloud services are optional adapters.
 host (your ai platform) ──HTTP──▶ app/main.py        your ai platform adapter (only host-coupled layer)
                               │
                               ▼
-                        app/service.py      NevagAgent.run()/.resume()/.ask()  ◀ the ONE boundary
+                        app/service.py      nebagAgent.run()/.resume()/.ask()  ◀ the ONE boundary
                               │
                               ▼
                         app/workflow.py     LangGraph graph (+ sequential fallback), HITL checkpoint
                               │
                               ▼
                         app/agents.py       the reusable agents (all real)
-        injected deps: config (NEVAG_*), llm, embeddings, vector store/retriever,
+        injected deps: config (nebag_*), llm, embeddings, vector store/retriever,
                        ocr, state store, observability — no globals, all injected.
 ```
 
 Foundation: an **Agent Registry** ([registry.py](app/registry.py)) cataloging every
 agent's capabilities/IO/version, and formal **Node Types** + declarative template
 ([nodes.py](app/nodes.py)). Integration-safety rules: no globals, all deps injected,
-`NEVAG_`-prefixed config, typed I/O contracts, pluggable providers, HITL as
+`nebag_`-prefixed config, typed I/O contracts, pluggable providers, HITL as
 resumable state (not a blocking call), deterministic reproducible runs.
 
 ---
@@ -84,7 +84,7 @@ Highlights of what's real:
 
 Chunk → embed → upsert (Qdrant) + per-submission **BM25** index → **dense ⊕ BM25 →
 RRF fusion → MMR diversification → rerank → evidence-quality gate**. Config-gated
-(`NEVAG_RAG_EXTRACTION_ENABLED`); off by default so the deterministic full-text
+(`nebag_RAG_EXTRACTION_ENABLED`); off by default so the deterministic full-text
 path remains the offline floor. Embeddings cached by content hash (memory or
 SQLite). See [retrieval.py](app/retrieval.py), [vectorstore.py](app/vectorstore.py),
 [rerank.py](app/rerank.py), [embeddings.py](app/embeddings.py).
@@ -94,7 +94,7 @@ SQLite). See [retrieval.py](app/retrieval.py), [vectorstore.py](app/vectorstore.
 ## Config-driven design
 
 Single source of truth: one pydantic `Settings` ([config.py](app/config.py)) with a
-generic `NEVAG_*` env overlay **and a host-alias loader** (so an existing host
+generic `nebag_*` env overlay **and a host-alias loader** (so an existing host
 `.env` using `AZURE_OPENAI_*`, `TXTEMBD_*`, `SH_*`, `TESSERACT_CMD`, … works without
 renaming). Business behavior lives in **`config/*.json`**, not code:
 
@@ -131,21 +131,21 @@ cp env.example .env           # then set the lines below
 
 `.env` for the **local** stack:
 ```
-NEVAG_LLM_PROVIDER=ollama
-NEVAG_EMBEDDING_PROVIDER=ollama
-NEVAG_VECTOR_STORE=qdrant
-NEVAG_QDRANT_URL=http://localhost:6333
-NEVAG_OCR_PROVIDER=tesseract
-NEVAG_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe
-NEVAG_RAG_EXTRACTION_ENABLED=true
-NEVAG_DATABASE_URL=sqlite:///./nevag_state.db
+nebag_LLM_PROVIDER=ollama
+nebag_EMBEDDING_PROVIDER=ollama
+nebag_VECTOR_STORE=qdrant
+nebag_QDRANT_URL=http://localhost:6333
+nebag_OCR_PROVIDER=tesseract
+nebag_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe
+nebag_RAG_EXTRACTION_ENABLED=true
+nebag_DATABASE_URL=sqlite:///./nebag_state.db
 ```
 
 `.env` for the **Azure adapter** (optional; host names auto-aliased):
 ```
-NEVAG_LLM_PROVIDER=azure_openai
-NEVAG_EMBEDDING_PROVIDER=azure_openai
-NEVAG_EMBEDDING_DIM=1536
+nebag_LLM_PROVIDER=azure_openai
+nebag_EMBEDDING_PROVIDER=azure_openai
+nebag_EMBEDDING_DIM=1536
 # AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_API_KEY / TXTEMBD_DEPLOYMENT_NAME picked up via alias loader
 ```
 
@@ -158,10 +158,10 @@ NEVAG_EMBEDDING_DIM=1536
 uvicorn app.main:app --reload --port 8088
 ```
 - `GET  /healthz` · `GET /readyz` — liveness + LLM/OCR/embeddings/vector-store status
-- `POST /nevag_submission_triage` — your ai platform base contract (`{chat_history, query}`)
-- `POST /upload/nevag_submission_triage` — manual file upload intake
-- `POST /resume/nevag_submission_triage` — HITL resume after review
-- `POST /copilot/nevag_submission_triage` — grounded Q&A over a submission
+- `POST /nebag_submission_triage` — your ai platform base contract (`{chat_history, query}`)
+- `POST /upload/nebag_submission_triage` — manual file upload intake
+- `POST /resume/nebag_submission_triage` — HITL resume after review
+- `POST /copilot/nebag_submission_triage` — grounded Q&A over a submission
 - `GET  /registration` · `GET /registry/catalog` — your ai platform payload + agent catalog
 
 ---
@@ -192,7 +192,7 @@ preservation); audit (deterministic hash); copilot; observability (structured
 logging + run metrics); slim persisted state; SQLite/Postgres stores; hybrid
 retrieval over Qdrant; Perplexity research + SharePoint intake connectors.
 
-**Validated on real data:** a real German D&O submission (FRoSTA AG + half-year
+**Validated on real data:** a real German D&O submission (froste AG + half-year
 financial report PDF) ran end-to-end on Azure GPT‑4.1 — correctly extracting
 insured name, industry (multilingual), and revenue from German text, with
 governance routing missing/ambiguous fields to human review.
