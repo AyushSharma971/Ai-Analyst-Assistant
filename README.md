@@ -1,6 +1,5 @@
-# Nevag Submission Triage Agent
 
-A reusable, document-heavy underwriting **submission triage agent**: messy
+A reusable, document-heavy underwriting ** agent**: messy
 submission in (email + PDF/scanned PDF/Excel/Word/ZIP) → every rater-required
 attribute extracted **with evidence**, validated, and safely written into the
 carrier's Excel rater. Built **standalone** but designed to drop into the **One AI**
