@@ -1,0 +1,38 @@
+# --- Core (needed to run the skeleton) ---
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+python-dotenv>=1.0   # optional: enables .env loading in get_settings()
+
+# --- Orchestration (intended executor; skeleton falls back if absent) ---
+langgraph>=0.2
+langchain-core>=0.3
+
+# --- LLM + embeddings (local-first, open source) ---
+# Ollama runtime: install separately (https://ollama.com) and `ollama pull llama3.1`
+#   + `ollama pull bge-m3`. The client uses stdlib HTTP, so NO python package here.
+# sentence-transformers  # optional local embeddings (all-MiniLM-L6-v2)
+# openai                 # OPTIONAL cloud adapter only (NEVAG_*_PROVIDER=azure_openai)
+
+# --- Document AI / extraction (implemented: app/document_ai.py) ---
+pymupdf>=1.24        # digital PDF text + page render for OCR
+pdfplumber>=0.11     # PDF table extraction
+openpyxl>=3.1        # Excel (.xlsx/.xlsm) parsing
+python-docx>=1.1     # Word (.docx) parsing
+pillow>=10           # image handling for OCR
+# Email .eml uses the Python stdlib (no dependency). For Outlook .msg:
+# extract-msg
+# OCR backends (pick one; agent degrades gracefully if neither is present):
+#   - Azure AI Document Intelligence (org cloud standard):
+# azure-ai-documentintelligence
+#   - Local Tesseract (open source). Needs the tesseract BINARY installed too
+#     (e.g. winget install UB-Mannheim.TesseractOCR) and pytesseract:
+pytesseract>=0.3.13
+# pandas  # optional, for richer tabular handling downstream
+
+# --- Retrieval / vector store ---
+qdrant-client>=1.7          # Qdrant backend (default); supports local ":memory:"
+# azure-search-documents     # optional Azure AI Search fallback backend
+
+# --- Persistence / infra (uncomment when wiring real stores) ---
+# psycopg[binary]

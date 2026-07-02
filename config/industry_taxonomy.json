@@ -1,0 +1,18 @@
+{
+  "_comment": "Industry & Product detection taxonomy (agent #6). Config-driven: keywords -> industry, and industry -> likely product. Edit without code. Override path with NEVAG_INDUSTRY_TAXONOMY_PATH.",
+  "industries": {
+    "Healthcare": ["healthcare", "hospital", "clinic", "medical", "phi", "patient", "health systems"],
+    "Technology/SaaS": ["saas", "software", "cloud", "platform", "technology", "fintech"],
+    "Manufacturing": ["manufacturing", "factory", "plant", "industrial", "production"],
+    "Financial Services": ["bank", "insurance", "asset management", "lending", "financial services"],
+    "Retail": ["retail", "ecommerce", "e-commerce", "store", "consumer goods"]
+  },
+  "industry_to_product": {
+    "Healthcare": "D&O + Cyber (PHI exposure)",
+    "Technology/SaaS": "Cyber + Tech E&O",
+    "Manufacturing": "General Liability + Property",
+    "Financial Services": "D&O + Professional Liability",
+    "Retail": "General Liability + Cyber",
+    "_default": "D&O"
+  }
+}

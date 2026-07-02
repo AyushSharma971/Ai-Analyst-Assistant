@@ -1,0 +1,16 @@
+{
+  "_comment": "Carrier rater mapping — canonical attribute -> target cell in the carrier's Excel rater. The 'WHERE to write' for Safe Excel Autofill. Config-driven: add a carrier or change a cell without touching code. Select the active carrier with NEVAG_DEFAULT_CARRIER; override this file's path with NEVAG_CARRIER_MAPPING_PATH. Each carrier may set a 'sheet' (else the active sheet is used) and an optional 'workbook' default template path.",
+  "carriers": {
+    "default": {
+      "sheet": "Rater",
+      "cells": {
+        "insured_name": "B2",
+        "annual_revenue": "B3",
+        "employee_count": "B4",
+        "industry": "B5",
+        "mfa_enabled": "B6",
+        "prior_claims_count": "B7"
+      }
+    }
+  }
+}

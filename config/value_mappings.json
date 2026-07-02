@@ -1,0 +1,5 @@
+{
+  "_comment": "Canonical-value -> carrier dropdown vocabulary mapping (Safe Excel Autofill). When a target cell has a data-validation list, the canonical value is mapped to a matching allowed option (e.g. boolean True -> 'Yes'). Override with NEVAG_VALUE_MAPPINGS_PATH. 'boolean' maps booleans; 'by_attribute' can map specific attribute values to carrier labels.",
+  "boolean": {"true": "Yes", "false": "No"},
+  "by_attribute": {}
+}

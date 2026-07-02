@@ -1,0 +1,39 @@
+{
+  "_comment": "Attribute extraction + validation catalog. The 'HOW' of Semantic Extraction AND the 'rules' of Truth Validation. Which attributes are REQUIRED is decided by the rater (RaterTemplateAgent); this file describes how to extract/interpret/validate each one. Edit freely without touching code. Override the path with NEVAG_ATTRIBUTE_CATALOG_PATH. dtype: string | number | integer | boolean. constraints: {required, min, max, allowed, pattern}.",
+  "attributes": {
+    "insured_name": {
+      "description": "Legal name of the insured entity",
+      "dtype": "string",
+      "aliases": ["insured name", "named insured", "applicant", "insured"],
+      "constraints": {"required": true, "pattern": ".*\\S.*"}
+    },
+    "annual_revenue": {
+      "description": "Most recent annual revenue in USD",
+      "dtype": "number",
+      "aliases": ["annual revenue", "revenue", "total revenue", "gross revenue"],
+      "constraints": {"min": 0, "max": 1000000000000}
+    },
+    "employee_count": {
+      "description": "Total number of employees",
+      "dtype": "integer",
+      "aliases": ["employee count", "employees", "number of employees", "headcount", "ftes"],
+      "constraints": {"min": 0, "max": 10000000}
+    },
+    "industry": {
+      "description": "Primary industry / sector of the insured",
+      "dtype": "string",
+      "aliases": ["industry", "sector", "business class", "naics"]
+    },
+    "mfa_enabled": {
+      "description": "Whether multi-factor authentication is enabled",
+      "dtype": "boolean",
+      "aliases": ["multi-factor authentication", "mfa enabled", "mfa", "two-factor", "2fa"]
+    },
+    "prior_claims_count": {
+      "description": "Number of prior claims in the lookback period",
+      "dtype": "integer",
+      "aliases": ["prior claims", "number of claims", "claims count", "prior claim count"],
+      "constraints": {"min": 0, "max": 100000}
+    }
+  }
+}

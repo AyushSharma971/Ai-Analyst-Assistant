@@ -1,0 +1,15 @@
+{
+  "_comment": "Ontology & Knowledge Graph rules (agent #8). Each rule fires when an attribute holds a given value and asserts an evidence-backed relationship (subject -> relation -> object). Config-driven, no code changes. Override with NEVAG_ONTOLOGY_RULES_PATH. 'when' supports: equals, gte, lte, present.",
+  "rules": [
+    {"attribute": "mfa_enabled", "when": {"equals": true},
+     "subject": "MFA", "relation": "reduces", "object": "account takeover risk"},
+    {"attribute": "mfa_enabled", "when": {"equals": false},
+     "subject": "missing MFA", "relation": "increases", "object": "account takeover risk"},
+    {"attribute": "industry", "when": {"equals": "Healthcare"},
+     "subject": "Healthcare operations", "relation": "implies", "object": "PHI / HIPAA exposure"},
+    {"attribute": "prior_claims_count", "when": {"gte": 1},
+     "subject": "prior claims history", "relation": "signals", "object": "elevated frequency risk"},
+    {"attribute": "annual_revenue", "when": {"gte": 500000000},
+     "subject": "large revenue", "relation": "implies", "object": "higher severity exposure"}
+  ]
+}
