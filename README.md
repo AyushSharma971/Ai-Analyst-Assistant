@@ -2,7 +2,7 @@
 A reusable, document-heavy underwriting ** agent**: messy
 submission in (email + PDF/scanned PDF/Excel/Word/ZIP) → every rater-required
 attribute extracted **with evidence**, validated, and safely written into the
-carrier's Excel rater. Built **standalone** but designed to drop into the **One AI**
+carrier's Excel rater. Built **standalone** but designed to drop into the **your AI platform**
 chatbot as a data agent via a thin adapter + marketplace registration — no rewrite.
 
 Design principles enforced throughout: **fully local / open-source first**,
@@ -38,7 +38,7 @@ and **clean provider interfaces** so cloud services are optional adapters.
 ## Architecture (boundary-first)
 
 ```
-host (One AI) ──HTTP──▶ app/main.py        One AI adapter (only host-coupled layer)
+host (your ai platform) ──HTTP──▶ app/main.py        your ai platform adapter (only host-coupled layer)
                               │
                               ▼
                         app/service.py      NevagAgent.run()/.resume()/.ask()  ◀ the ONE boundary
@@ -158,11 +158,11 @@ NEVAG_EMBEDDING_DIM=1536
 uvicorn app.main:app --reload --port 8088
 ```
 - `GET  /healthz` · `GET /readyz` — liveness + LLM/OCR/embeddings/vector-store status
-- `POST /nevag_submission_triage` — One AI base contract (`{chat_history, query}`)
+- `POST /nevag_submission_triage` — your ai platform base contract (`{chat_history, query}`)
 - `POST /upload/nevag_submission_triage` — manual file upload intake
 - `POST /resume/nevag_submission_triage` — HITL resume after review
 - `POST /copilot/nevag_submission_triage` — grounded Q&A over a submission
-- `GET  /registration` · `GET /registry/catalog` — One AI payload + agent catalog
+- `GET  /registration` · `GET /registry/catalog` — your ai platform payload + agent catalog
 
 ---
 
@@ -211,7 +211,7 @@ validate autofill/macro preservation on a real template).
 
 ---
 
-## One AI integration checklist
+## your ai platform integration checklist
 
 - [ ] Register agent: `AgentName="Nevag Submission Triage"`, `AgentSource="agent studio"` (`GET /registration` emits the payload).
 - [ ] Host: set `NEVAG_AGENT_BACKEND_URL`.
