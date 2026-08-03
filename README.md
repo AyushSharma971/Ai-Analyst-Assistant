@@ -213,7 +213,7 @@ validate autofill/macro preservation on a real template).
 
 ## your ai platform integration checklist
 
-- [ ] Register agent: `AgentName="Nevag Submission Triage"`, `AgentSource="agent studio"` (`GET /registration` emits the payload).
-- [ ] Host: set `NEVAG_AGENT_BACKEND_URL`.
+- [ ] Register agent: `AgentName="ai analyst agent"`, `AgentSource="agent studio"` (`GET /registration` emits the payload).
+- [ ] Host: set `ai-analyst_AGENT_BACKEND_URL`.
 - [ ] Keep the `{result.response / table_data}` envelope (already emitted) + filled-rater file delivery.
 - [ ] Choose providers via config (local Ollama/Qdrant or Azure adapter).
